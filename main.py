@@ -23,7 +23,7 @@ def command_handler(update: Update, context: CallbackContext) -> None:
     if command == '/afk':
         update.message.reply_markdown_v2(
             reply_to_message_id=update.message.message_id,
-            text=user + ' *is away from keyboard*'
+            text=user + ' *is away from keyboard*\n status: _'+' '.join(message.split(' ')[1:])+'_'
         )
     elif command in ['/back', '/online', '/returned']:
         update.message.reply_markdown_v2(
