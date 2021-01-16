@@ -17,18 +17,19 @@ def command_handler(update: Update, context: CallbackContext) -> None:
     # print(update)
     message = update.message.text
     command = message.split(' ')[0]
+    message = ' '.join(message.split(' ')[1:])
     user = update.message.from_user
     user = user.first_name if user.username is None else user.username
 
     if command == '/afk':
         update.message.reply_markdown_v2(
             reply_to_message_id=update.message.message_id,
-            text=user + ' *is away from keyboard*\n status: _'+' '.join(message.split(' ')[1:])+'_'
+            text=f'{user} *is away from keyboard*\n status: _{message}_'
         )
     elif command in ['/back', '/online', '/returned']:
         update.message.reply_markdown_v2(
             reply_to_message_id=update.message.message_id,
-            text=user + ' *is online*'
+            text=f'{user} *is online*'
         )
 
 
