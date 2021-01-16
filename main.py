@@ -4,7 +4,7 @@ from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 from telegram.utils.helpers import escape_markdown
 
-TOKEN = ''
+TOKEN = '1598446066:AAE7kO8hr71gKVy19HgoTg-0DlqRcFGuKrs'
 
 # Enable logging
 logging.basicConfig(
