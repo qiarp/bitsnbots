@@ -3,7 +3,7 @@ import logging
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 
-TOKEN = '1598446066:AAHLS9uMfoGI4HTiLa18DS6dyea3pas7k9M'
+TOKEN = ''
 
 # Enable logging
 logging.basicConfig(
@@ -16,15 +16,16 @@ logger = logging.getLogger(__name__)
 def command_handler(update: Update, context: CallbackContext) -> None:
     # print(update)
     message = update.message.text
+    command = message.split(' ')[0]
     user = update.message.from_user
     user = user.first_name if user.username is None else user.username
 
-    if message == '/afk':
+    if command == '/afk':
         update.message.reply_markdown_v2(
             reply_to_message_id=update.message.message_id,
             text=user + ' *is away from keyboard*'
         )
-    elif message in ['/back', '/online', '/returned']:
+    elif command in ['/back', '/online', '/returned']:
         update.message.reply_markdown_v2(
             reply_to_message_id=update.message.message_id,
             text=user + ' *is online*'
