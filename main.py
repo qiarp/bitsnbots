@@ -2,6 +2,7 @@ import logging
 
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+from telegram.utils.helpers import escape_markdown
 
 TOKEN = ''
 
@@ -17,7 +18,7 @@ def command_handler(update: Update, context: CallbackContext) -> None:
     # print(update)
     message = update.message.text
     command = message.split(' ')[0]
-    message = ' '.join(message.split(' ')[1:])
+    message = escape_markdown(' '.join(message.split(' ')[1:]))
     user = update.message.from_user
     user = user.first_name if user.username is None else user.username
 
