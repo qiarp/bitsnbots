@@ -8,7 +8,6 @@ TOKEN = '1598446066:AAE7kO8hr71gKVy19HgoTg-0DlqRcFGuKrs'
 client = MongoClient("mongodb+srv://bot:3vN8mvbFffVbNtIx@runaway.kqsps.mongodb.net/blog?retryWrites=true&w=majority")
 db = client['todo']
 lists = db['list']
-TOKEN = '1598446066:AAE7kO8hr71gKVy19HgoTg-0DlqRcFGuKrs'
 
 # Enable logging
 logging.basicConfig(
