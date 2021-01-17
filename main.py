@@ -1,13 +1,13 @@
 import logging
+
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 from telegram.utils.helpers import escape_markdown
-from pymongo import MongoClient
 
-TOKEN = '1598446066:AAE7kO8hr71gKVy19HgoTg-0DlqRcFGuKrs'
-client = MongoClient("mongodb+srv://bot:3vN8mvbFffVbNtIx@runaway.kqsps.mongodb.net/blog?retryWrites=true&w=majority")
-db = client['todo']
-lists = db['list']
+from tinydb import TinyDB, Query
+
+TOKEN: str = '1598446066:AAE7kO8hr71gKVy19HgoTg-0DlqRcFGuKrs'
+db: TinyDB = TinyDB('./db-todo.json')
 
 # Enable logging
 logging.basicConfig(
@@ -25,42 +25,48 @@ def command_handler(update: Update, context: CallbackContext) -> None:
     command = message.split(' ')[0]
     message = escape_markdown(' '.join(message.split(' ')[1:]))
     user = update.message.from_user
-    user = user.first_name if user.username is None else user.username
+    user_name = user.first_name if user.username is None else user.username
 
     if command == '/afk':
         update.message.reply_markdown_v2(
             reply_to_message_id=update.message.message_id,
-            text=f'{user} *is away from keyboard*\n status: _{message}_'
+            text=f'{user_name} *is away from keyboard*\n status: _{message}_'
         )
     
     elif command in ['/back', '/online', '/returned']:
         update.message.reply_markdown_v2(
             reply_to_message_id=update.message.message_id,
-            text=f'{user} *is online*'
+            text=f'{user_name} *is online*'
         )
     
     elif command == '/todo':
-        lists.insert_one({'todo':message, 'id':teste})
-        update.message.reply_markdown_v2(
-            reply_to_message_id=update.message.message_id,
-            text=f'I will remember that for you\!'
-    )
+        db.insert({'user_id': user.id, 'task': message})
 
-    elif command == '/show_todos':
-        todos = list(lists.find({'id':teste}))
-        output = [f'{item["todo"]}' for item in todos]
-        x = escape_markdown('\n'.join(output))
         update.message.reply_markdown_v2(
             reply_to_message_id=update.message.message_id,
-            text=f'*Your todos:* \n{x}'
-    )
+            text=escape_markdown('Tarefa salva\! Use /show_tasks para visualizar todas as suas tarefas')
+        )
+
+    elif command == '/show_tasks':
+        task = Query()
+        todos = db.search(task.user_id == user.id)
+        tasks = [f'\- {item["task"]}' for item in todos]
+        user_tasks = escape_markdown('\n'.join(tasks))
+
+        update.message.reply_markdown_v2(
+            reply_to_message_id=update.message.message_id,
+            text=f'*Suas tarefas:* \n{user_tasks}'
+        )
     
 
 def main():
     updater = Updater(TOKEN, use_context=True)
     dispatcher = updater.dispatcher
 
-    dispatcher.add_handler(CommandHandler(['afk', 'back', 'online', 'returned'], command_handler))
+    dispatcher.add_handler(CommandHandler(
+        ['afk', 'back', 'online', 'returned', 'todo', 'show_tasks'],
+        command_handler)
+    )
     dispatcher.add_handler(MessageHandler(Filters.text, echoer))
 
     # Start the Bot

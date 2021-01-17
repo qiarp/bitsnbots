@@ -1,3 +1,2 @@
 python-telegram-bot
-pymongo
-dnspython
+tinydb~=4.3.0
