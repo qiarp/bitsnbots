@@ -14,8 +14,11 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+def echoer(update: Update, context: CallbackContext) -> None:
+    print(update)
+
+
 def command_handler(update: Update, context: CallbackContext) -> None:
-    # print(update)
     message = update.message.text
     command = message.split(' ')[0]
     message = escape_markdown(' '.join(message.split(' ')[1:]))
@@ -38,7 +41,8 @@ def main():
     updater = Updater(TOKEN, use_context=True)
     dispatcher = updater.dispatcher
 
-    dispatcher.add_handler(MessageHandler(Filters.text, command_handler))
+    dispatcher.add_handler(CommandHandler(['afk', 'back', 'online', 'returned'], command_handler))
+    dispatcher.add_handler(MessageHandler(Filters.text, echoer))
 
     # Start the Bot
     updater.start_polling()
