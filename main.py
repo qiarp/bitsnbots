@@ -27,10 +27,15 @@ def command_handler(update: Update, context: CallbackContext) -> None:
     user = update.message.from_user
     user_name = user.first_name if user.username is None else user.username
 
+    if len(message) != 0:
+        response = f'{user_name} *is away from keyboard*\n status: _{message}_'
+    else:
+        response = f'{user_name} *is away from keyboard*'
+
     if command == '/afk':
         update.message.reply_markdown_v2(
             reply_to_message_id=update.message.message_id,
-            text=f'{user_name} *is away from keyboard*\n status: _{message}_'
+            text=response
         )
     
     elif command in ['/back', '/online', '/returned']:
@@ -50,12 +55,12 @@ def command_handler(update: Update, context: CallbackContext) -> None:
     elif command == '/show_tasks':
         task = Query()
         todos = db.search(task.user_id == user.id)
-        tasks = [f'\- {item["task"]}' for item in todos]
+        tasks = [f'- {item["task"]}' for item in todos]
         user_tasks = escape_markdown('\n'.join(tasks))
 
-        update.message.reply_markdown_v2(
+        update.message.reply_html(
             reply_to_message_id=update.message.message_id,
-            text=f'*Suas tarefas:* \n{user_tasks}'
+            text=f'<b>Suas tarefas:</b> \n{user_tasks}'
         )
     
 
