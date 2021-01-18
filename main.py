@@ -7,7 +7,7 @@ from telegram.utils.helpers import escape_markdown
 
 from tinydb import TinyDB, Query
 
-TOKEN: str = '1598446066:AAE7kO8hr71gKVy19HgoTg-0DlqRcFGuKrs'
+TOKEN: str = '1598446066:AAEkQ1ZuJkpJQQluUI2gUnyU1ERCu7IJab8'
 db: TinyDB = TinyDB('./db-todo.json')
 
 # Enable logging
@@ -72,7 +72,7 @@ def command_handler(update: Update, context: CallbackContext) -> None:
             text=response
         )
 
-    elif command in ['/del_task']:
+    elif command in ['/del_task', '/done']:
         task_token = message.split(' ')[0]
         task = Query()
         del_task = len(db.remove((task.user_id == user.id) & (task.token == task_token)))
@@ -94,7 +94,7 @@ def main():
 
     dispatcher.add_handler(CommandHandler(
         ['afk', 'back', 'online', 'returned',
-         'todo', 'task', 'show_tasks', 'tasks', 'del_task'],
+         'todo', 'task', 'show_tasks', 'tasks', 'del_task', 'done'],
         command_handler)
     )
     dispatcher.add_handler(MessageHandler(Filters.text, echoer))
