@@ -22,7 +22,7 @@ def echoer(update: Update, context: CallbackContext) -> None:
 
 def command_handler(update: Update, context: CallbackContext) -> None:
     message = update.message.text
-    command = message.split(' ')[0]
+    command = ''.join(message.split('@')[:1]).split(' ')[0]
     message = escape_markdown(' '.join(message.split(' ')[1:]))
     user = update.message.from_user
     user_name = user.first_name if user.username is None else user.username
@@ -47,9 +47,9 @@ def command_handler(update: Update, context: CallbackContext) -> None:
     elif command == '/todo':
         db.insert({'user_id': user.id, 'task': message})
 
-        update.message.reply_markdown_v2(
+        update.message.reply_text(
             reply_to_message_id=update.message.message_id,
-            text=escape_markdown('Tarefa salva\! Use /show_tasks para visualizar todas as suas tarefas')
+            text='Tarefa salva! Use /show_tasks para visualizar todas as suas tarefas'
         )
 
     elif command == '/show_tasks':
