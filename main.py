@@ -49,9 +49,10 @@ def command_handler(update: Update, context: CallbackContext) -> None:
         token = token_hex(4)
         db.insert({'token': token, 'user_id': user.id, 'task': message})
 
-        update.message.reply_text(
+        update.message.reply_html(
             reply_to_message_id=update.message.message_id,
-            text='Tarefa salva! Use /show_tasks para visualizar todas as suas tarefas'
+            text=f'Tarefa <code>{token}</code> salva! '
+                 f'Use /show_tasks para visualizar todas as suas tarefas'
         )
 
     elif command in ['/show_tasks', '/tasks']:
@@ -74,13 +75,18 @@ def command_handler(update: Update, context: CallbackContext) -> None:
     elif command in ['/del_task']:
         task_token = message.split(' ')[0]
         task = Query()
-        _ = db.remove((task.user_id == user.id) & (task.token == task_token))
+        del_task = len(db.remove((task.user_id == user.id) & (task.token == task_token)))
+
+        if del_task == 1:
+            response = f'<b>Tarefa {task_token} removida!</b>'
+        else:
+            response = 'Nenhuma tarefa correspondente'
 
         update.message.reply_html(
             reply_to_message_id=update.message.message_id,
-            text=f'<b>Tarefa {task_token} removida!</b>'
+            text=response
         )
-    
+
 
 def main():
     updater = Updater(TOKEN, use_context=True)

@@ -1,1 +1,1 @@
-{"_default": {"1": {"token": "588b5e84", "user_id": 805185455, "task": "code"}}}
+{"_default": {"1": {"token": "eaa57f0c", "user_id": 805185455, "task": " Precisa testar se ele n\u00e3o permite deletar tarefa de outra pessoa"}, "2": {"token": "4df709bb", "user_id": 805185455, "task": "implementar tratativa de erro ao deletar task n\u00e3o existente"}, "3": {"token": "f448d176", "user_id": 805185455, "task": "adicionar dados de init e configura\u00e7\u00e3o em classe separada & adicionar apitoken em env var"}}}
