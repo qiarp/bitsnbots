@@ -1,4 +1,5 @@
 import logging
+from secrets import token_hex
 
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
@@ -44,23 +45,40 @@ def command_handler(update: Update, context: CallbackContext) -> None:
             text=f'{user_name} *is online*'
         )
     
-    elif command == '/todo':
-        db.insert({'user_id': user.id, 'task': message})
+    elif command in ['/todo', '/task']:
+        token = token_hex(4)
+        db.insert({'token': token, 'user_id': user.id, 'task': message})
 
         update.message.reply_text(
             reply_to_message_id=update.message.message_id,
             text='Tarefa salva! Use /show_tasks para visualizar todas as suas tarefas'
         )
 
-    elif command == '/show_tasks':
+    elif command in ['/show_tasks', '/tasks']:
         task = Query()
         todos = db.search(task.user_id == user.id)
-        tasks = [f'- {item["task"]}' for item in todos]
-        user_tasks = escape_markdown('\n'.join(tasks))
+        all_tasks = len(todos)
+
+        if all_tasks == 0:
+            response = '<b>Nenhuma tarefa!</b>'
+        else:
+            tasks = [f' [<code>{item["token"]}</code>] - {item["task"]}' for item in todos]
+            user_tasks = '\n'.join(tasks)
+            response = f'<b>Suas tarefas ({all_tasks}):</b> \n{user_tasks}'
 
         update.message.reply_html(
             reply_to_message_id=update.message.message_id,
-            text=f'<b>Suas tarefas:</b> \n{user_tasks}'
+            text=response
+        )
+
+    elif command in ['/del_task']:
+        task_token = message.split(' ')[0]
+        task = Query()
+        _ = db.remove((task.user_id == user.id) & (task.token == task_token))
+
+        update.message.reply_html(
+            reply_to_message_id=update.message.message_id,
+            text=f'<b>Tarefa {task_token} removida!</b>'
         )
     
 
@@ -69,7 +87,8 @@ def main():
     dispatcher = updater.dispatcher
 
     dispatcher.add_handler(CommandHandler(
-        ['afk', 'back', 'online', 'returned', 'todo', 'show_tasks'],
+        ['afk', 'back', 'online', 'returned',
+         'todo', 'task', 'show_tasks', 'tasks', 'del_task'],
         command_handler)
     )
     dispatcher.add_handler(MessageHandler(Filters.text, echoer))
