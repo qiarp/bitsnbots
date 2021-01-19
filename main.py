@@ -8,7 +8,7 @@ from telegram.utils.helpers import escape_markdown
 from tinydb import TinyDB, Query
 
 TOKEN: str = '1598446066:AAEkQ1ZuJkpJQQluUI2gUnyU1ERCu7IJab8'
-db: TinyDB = TinyDB('./db-todo.json')
+db: TinyDB = TinyDB('./storage/db-todo.json')
 
 # Enable logging
 logging.basicConfig(
