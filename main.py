@@ -47,12 +47,16 @@ def command_handler(update: Update, context: CallbackContext) -> None:
     
     elif command in ['/todo', '/task']:
         token = token_hex(4)
-        db.insert({'token': token, 'user_id': user.id, 'task': message})
+        if len(message) <= 3:
+            response = "Informe a tarefa! <code>/todo minha task</code>"
+        else:
+            db.insert({'token': token, 'user_id': user.id, 'task': message})
+            response = f'Tarefa <code>{token}</code> salva! ' \
+                       f'Use /show_tasks para visualizar todas as suas tarefas'
 
         update.message.reply_html(
             reply_to_message_id=update.message.message_id,
-            text=f'Tarefa <code>{token}</code> salva! '
-                 f'Use /show_tasks para visualizar todas as suas tarefas'
+            text=response
         )
 
     elif command in ['/show_tasks', '/tasks']:
