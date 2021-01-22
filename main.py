@@ -9,7 +9,7 @@ import json
 import logging
 import traceback
 
-from telegram import Update
+from telegram import Update, File
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 from telegram.utils.helpers import escape_markdown
 
@@ -159,11 +159,26 @@ def command_handler(update: Update, context: CallbackContext) -> None:
             response = 'Erro salvando snippet!'
 
         update.message.reply_html(
+            reply_to_message_id=message_id,
             text=response
         )
 
         # deleta a mensagem com o código
         context.bot.delete_message(chat_id=chat_id, message_id=message_id)
+
+
+def document_handler(update: Update, context: CallbackContext) -> None:
+    chat_id = update.message.chat_id
+    message_id = update.message.message_id
+
+    document = update.message.document
+
+    file: File = document.get_file()
+
+    update.message.reply_text(
+
+        text=file.file_path
+    )
 
 
 def error_handler(update: Update, context: CallbackContext) -> None:
@@ -197,6 +212,8 @@ def main():
         command_handler)
     )
     dispatcher.add_handler(MessageHandler(Filters.text, echoer))
+
+    dispatcher.add_handler(MessageHandler(Filters.document, document_handler))
 
     dispatcher.add_error_handler(error_handler)
 
