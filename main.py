@@ -58,7 +58,6 @@ def command_handler(update: Update, context: CallbackContext) -> None:
     
     elif command in ['/back', '/online', '/returned']:
         update.message.reply_markdown_v2(
-            reply_to_message_id=update.message.message_id,
             text=f'{user_name} *is online*'
         )
     
@@ -72,7 +71,6 @@ def command_handler(update: Update, context: CallbackContext) -> None:
                        f'Use /show_tasks para visualizar todas as suas tarefas'
 
         update.message.reply_html(
-            reply_to_message_id=update.message.message_id,
             text=response
         )
 
@@ -89,7 +87,6 @@ def command_handler(update: Update, context: CallbackContext) -> None:
             response = f'<b>Suas tarefas ({all_tasks}):</b> \n{user_tasks}'
 
         update.message.reply_html(
-            reply_to_message_id=update.message.message_id,
             text=response
         )
 
@@ -104,7 +101,6 @@ def command_handler(update: Update, context: CallbackContext) -> None:
             response = 'Nenhuma tarefa correspondente'
 
         update.message.reply_html(
-            reply_to_message_id=update.message.message_id,
             text=response
         )
 
@@ -123,7 +119,6 @@ def command_handler(update: Update, context: CallbackContext) -> None:
         """
 
         update.message.reply_html(
-            reply_to_message_id=update.message.message_id,
             text=response
         )
 
@@ -159,7 +154,6 @@ def command_handler(update: Update, context: CallbackContext) -> None:
             response = 'Erro salvando snippet!'
 
         update.message.reply_html(
-            reply_to_message_id=message_id,
             text=response
         )
 
@@ -176,7 +170,6 @@ def document_handler(update: Update, context: CallbackContext) -> None:
     file: File = document.get_file()
 
     update.message.reply_text(
-
         text=file.file_path
     )
 
