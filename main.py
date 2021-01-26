@@ -2,7 +2,6 @@ import logging
 from secrets import token_hex
 from requests import post
 from requests.packages import urllib3
-from json import dumps
 from random import randint
 import html
 import json
@@ -17,6 +16,7 @@ from tinydb import TinyDB, Query
 
 TOKEN: str = '1598446066:AAEkQ1ZuJkpJQQluUI2gUnyU1ERCu7IJab8'
 db: TinyDB = TinyDB('./storage/db-todo.json')
+file_db: TinyDB = TinyDB('./storage/db-file.json')
 
 # Enable logging
 logging.basicConfig(
@@ -143,7 +143,7 @@ def command_handler(update: Update, context: CallbackContext) -> None:
         req = post(
             url='https://snippets.glot.io/snippets',
             headers=codepaste_headers,
-            data=dumps(data),
+            data=json.dumps(data),
             verify=False
         )
 
@@ -164,13 +164,38 @@ def command_handler(update: Update, context: CallbackContext) -> None:
 def document_handler(update: Update, context: CallbackContext) -> None:
     chat_id = update.message.chat_id
     message_id = update.message.message_id
+    token = token_hex(9)
 
     document = update.message.document
+    from_info = update.message.from_user
 
     file: File = document.get_file()
 
-    update.message.reply_text(
-        text=file.file_path
+    data = {
+        'token': token,
+        'user': {
+            'id': from_info.id
+        },
+        'file': {
+            'file_id': document.file_id,
+            'file_unique_id': document.file_unique_id,
+            'thumb': {
+                'file_id': document.thumb.file_id,
+                'file_unique_id': document.thumb.file_unique_id,
+                'width': document.thumb.width,
+                'height': document.thumb.height,
+                'file_size': document.thumb.file_size
+            },
+            'file_name': document.file_name,
+            'mime_type': document.mime_type,
+            'file_size': document.file_size
+        }
+    }
+
+    file_db.insert(data)
+
+    update.message.reply_html(
+        text=f'File indexed - <code>{token}</code>'
     )
 
 
