@@ -30,6 +30,8 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 codepaste_headers = {'Authorization': 'Token c98f9e90-07df-413c-b7a1-8d6e7b6bb1d2',
                      'Content-type': 'application/json'}
 
+file_mimetypes = ['application/pdf', 'application/epub+zip']
+
 
 def echoer(update: Update, context: CallbackContext) -> None:
     print(update)
@@ -169,6 +171,10 @@ def document_handler(update: Update, context: CallbackContext) -> None:
     document = update.message.document
     from_info = update.message.from_user
 
+    if document.mime_type not in file_mimetypes:
+        return
+
+    # file: File = context.bot.get_file(document.file_id)
     file: File = document.get_file()
 
     data = {
@@ -179,13 +185,6 @@ def document_handler(update: Update, context: CallbackContext) -> None:
         'file': {
             'file_id': document.file_id,
             'file_unique_id': document.file_unique_id,
-            'thumb': {
-                'file_id': document.thumb.file_id,
-                'file_unique_id': document.thumb.file_unique_id,
-                'width': document.thumb.width,
-                'height': document.thumb.height,
-                'file_size': document.thumb.file_size
-            },
             'file_name': document.file_name,
             'mime_type': document.mime_type,
             'file_size': document.file_size
