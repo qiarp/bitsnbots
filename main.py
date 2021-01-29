@@ -8,15 +8,20 @@ import json
 import logging
 import traceback
 
-from telegram import Update, File
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+from telegram import Update, File, InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, CallbackQueryHandler
 from telegram.utils.helpers import escape_markdown
 
 from tinydb import TinyDB, Query
 
+from kanban.kanban import Kanban
+
 TOKEN: str = '1598446066:AAEkQ1ZuJkpJQQluUI2gUnyU1ERCu7IJab8'
 db: TinyDB = TinyDB('./storage/db-todo.json')
 file_db: TinyDB = TinyDB('./storage/db-file.json')
+kanban_db: TinyDB = TinyDB('./storage/db-kanban.json')
+
+kanban = Kanban(kanban_db)
 
 # Enable logging
 logging.basicConfig(
@@ -84,6 +89,7 @@ def command_handler(update: Update, context: CallbackContext) -> None:
         if all_tasks == 0:
             response = '<b>Nenhuma tarefa!</b>'
         else:
+            # adicionar parse de entities '<>' #todo
             tasks = [f' [<code>{item["token"]}</code>] - {item["task"]}' for item in todos]
             user_tasks = '\n'.join(tasks)
             response = f'<b>Suas tarefas ({all_tasks}):</b> \n{user_tasks}'
@@ -162,6 +168,85 @@ def command_handler(update: Update, context: CallbackContext) -> None:
         # deleta a mensagem com o código
         context.bot.delete_message(chat_id=chat_id, message_id=message_id)
 
+    elif command == '/new_board':
+        r = kanban.new_board(user_id=user.id)
+
+        update.message.reply_text(
+            text=str(r)
+        )
+
+    elif command == '/board':
+        board = kanban.get_board(owner_id=user.id)
+
+        keyboard = [
+            [
+                InlineKeyboardButton('backlog', callback_data='backlog'),
+                InlineKeyboardButton('to do', callback_data='todo'),
+            ],
+            [
+                InlineKeyboardButton('doing', callback_data='doing'),
+                InlineKeyboardButton('done', callback_data='done')
+            ],
+        ]
+
+        reply_markup = InlineKeyboardMarkup(keyboard)
+
+        update.message.reply_text(
+            text='Coluna:',
+            reply_markup=reply_markup
+        )
+
+    elif command == '/new_task':
+        status = message.split(' ')[0]
+        task = ''.join(message.split(' ')[1:])
+
+        _, token = kanban.add_task_to(user.id, status, task)
+
+        update.message.reply_text(
+            text=f'Nova tarefa {token} adicionada em {status}'
+        )
+
+
+def callback_handler(update: Update, context: CallbackContext) -> None:
+    query = update.callback_query
+    print(update)
+
+    user_id = query.from_user.id
+    original_user = query.message.reply_to_message.from_user.id
+
+    query.answer()
+
+    if user_id != original_user:
+        return
+
+    status = query.data
+
+    board = kanban.get_board(owner_id=user_id)
+
+    all_tasks = len(board[status])
+    tasks = [f' [<code>{token}</code>] - {board[status][token]}' for token in board[status]]
+    user_tasks = '\n'.join(tasks)
+    response = f'<b>Suas tarefas em {status} ({all_tasks}):</b> \n{user_tasks}'
+
+    keyboard = [
+        [
+            InlineKeyboardButton('backlog', callback_data='backlog'),
+            InlineKeyboardButton('to do', callback_data='todo'),
+        ],
+        [
+            InlineKeyboardButton('doing', callback_data='doing'),
+            InlineKeyboardButton('done', callback_data='done')
+        ],
+    ]
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    query.edit_message_text(
+        text=response,
+        reply_markup=reply_markup,
+        parse_mode=ParseMode.HTML
+    )
+
 
 def document_handler(update: Update, context: CallbackContext) -> None:
     chat_id = update.message.chat_id
@@ -225,12 +310,15 @@ def main():
         ['afk', 'back', 'online', 'returned',
          'todo', 'task', 'show_tasks', 'tasks', 'del_task', 'done',
          'code',
-         'help', 'ajuda'],
+         'help', 'ajuda',
+         'board', 'new_board', 'new_task'],
         command_handler)
     )
     dispatcher.add_handler(MessageHandler(Filters.text, echoer))
 
     dispatcher.add_handler(MessageHandler(Filters.document, document_handler))
+
+    updater.dispatcher.add_handler(CallbackQueryHandler(callback_handler))
 
     dispatcher.add_error_handler(error_handler)
 
