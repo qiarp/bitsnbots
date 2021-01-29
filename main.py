@@ -176,8 +176,6 @@ def command_handler(update: Update, context: CallbackContext) -> None:
         )
 
     elif command == '/board':
-        board = kanban.get_board(owner_id=user.id)
-
         keyboard = [
             [
                 InlineKeyboardButton('backlog', callback_data='backlog'),
@@ -198,7 +196,7 @@ def command_handler(update: Update, context: CallbackContext) -> None:
 
     elif command == '/new_task':
         status = message.split(' ')[0]
-        task = ''.join(message.split(' ')[1:])
+        task = ' '.join(message.split(' ')[1:])
 
         _, token = kanban.add_task_to(user.id, status, task)
 
