@@ -7,6 +7,7 @@ import html
 import json
 import logging
 import traceback
+from threading import Thread
 
 from telegram import Update, File, InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, CallbackQueryHandler
@@ -15,6 +16,7 @@ from telegram.utils.helpers import escape_markdown
 from tinydb import TinyDB, Query
 
 from kanban.kanban import Kanban
+from paser.parser import Parser
 
 TOKEN: str = '1598446066:AAEkQ1ZuJkpJQQluUI2gUnyU1ERCu7IJab8'
 db: TinyDB = TinyDB('./storage/db-todo.json')
@@ -37,9 +39,6 @@ codepaste_headers = {'Authorization': 'Token c98f9e90-07df-413c-b7a1-8d6e7b6bb1d
 
 file_mimetypes = ['application/pdf', 'application/epub+zip']
 
-
-def echoer(update: Update, context: CallbackContext) -> None:
-    print(update)
 
 
 def command_handler(update: Update, context: CallbackContext) -> None:
@@ -281,6 +280,55 @@ def document_handler(update: Update, context: CallbackContext) -> None:
     )
 
 
+def channel_handler(update: Update, context: CallbackContext) -> None:
+    """handle channel messages"""
+
+    chat_id = update.channel_post.chat_id
+    message_id = update.channel_post.message_id
+
+    message = update.channel_post
+    entities = message.entities
+
+    """
+    [
+    {'type': 'hashtag', 'offset': 0, 'length': 12}, 
+    {'type': 'hashtag', 'offset': 13, 'length': 4}, 
+    {'type': 'hashtag', 'offset': 18, 'length': 5}, 
+    {'type': 'hashtag', 'offset': 24, 'length': 8}, 
+    {'type': 'hashtag', 'offset': 33, 'length': 4}, 
+    {'type': 'bold', 'offset': 39, 'length': 50}, 
+    {'type': 'italic', 'offset': 92, 'length': 65}, 
+    {'type': 'url', 'offset': 159, 'length': 45}
+    ]
+    """
+    tags = []
+    title = []
+    desc = []
+    url = []
+
+    for entity in entities:
+        limit = entity.offset + entity.length
+        value = message.text[entity.offset:limit]
+
+        if entity.type == 'hashtag':
+            tags.append(value)
+        elif entity.type == 'bold':
+            title.append(value)
+        elif entity.type == 'italic':
+            desc.append(value)
+        elif entity.type == 'url':
+            url.append(value)
+
+    title = '. '.join(title)
+    desc = '. '.join(desc)
+    content = '\n'.join(url)
+
+    parser = Parser()
+    parser.gohugo_parser(title, desc, content, tags)
+
+    Thread(target=parser.gohugo_save).start()
+
+
 def error_handler(update: Update, context: CallbackContext) -> None:
     """Log the error and send a telegram message to notify the developer."""
     logger.error(msg="Exception while handling an update:", exc_info=context.error)
@@ -312,9 +360,9 @@ def main():
          'board', 'new_board', 'new_task'],
         command_handler)
     )
-    dispatcher.add_handler(MessageHandler(Filters.text, echoer))
 
     dispatcher.add_handler(MessageHandler(Filters.document, document_handler))
+    dispatcher.add_handler(MessageHandler(Filters.chat_type.channel, channel_handler))
 
     updater.dispatcher.add_handler(CallbackQueryHandler(callback_handler))
 

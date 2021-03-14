@@ -45,4 +45,3 @@ class Kanban:
         user_board[status][token] = task
 
         return self.db.update(user_board, board.owner == owner_id), token
-
