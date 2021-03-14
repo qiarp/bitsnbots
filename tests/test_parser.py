@@ -12,6 +12,7 @@ from parser.parser import Parser
      'https://bnbits.ml\nhttps://bnbits.ml\nhttps://duckduckgo.com', ['tag1', 'tag2', 'tag3', 'tag5'], '2021-03-14'),
     ('', 'bnb desc', 'https://bnbits.ml', ['tag21'], '2021-03-14'),
     ('', 'my desc', 'https://www.youtube.com/watch?v=zXTEWFb_6w4\nhttps://duckduckgo.com', ['tag31'], '2021-03-14'),
+    ('', '', 'https://bnbits.ml', [], '2021-03-14')
 ])
 def test_gohugo_parser(title, desc, content, tags, date):
     expected_template = '''
@@ -43,16 +44,17 @@ id: 1
 
 
 @pytest.mark.skip()
-@pytest.mark.parametrize("title, desc, content, tags", [
-    ('my title', 'description', 'https://bnbits.ml', ['tag0', 'tag1'])
+@pytest.mark.parametrize("title, desc, content, tags, date", [
+    ('my title', 'description', 'https://bnbits.ml', ['tag0', 'tag1'], '2021-03-11')
 ])
-def test_gohugo_save_with_git(title, desc, content, tags):
+def test_gohugo_save_with_git(title, desc, content, tags, date):
     parser = Parser()
     template, post_id = parser.gohugo_parser(
         title,
         desc,
         content,
-        tags
+        tags,
+        date
     )
     filename = parser.gohugo_save()
 
