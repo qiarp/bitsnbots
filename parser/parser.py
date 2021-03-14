@@ -41,7 +41,7 @@ id: [$id]
 
         template = template.replace('[$id]', post_id)
 
-        if title == '':
+        if title == '' and content != '':
             first_url = content.split('\n')[0]
             req = get(first_url)
             if req.status_code == 200:
@@ -49,6 +49,9 @@ id: [$id]
                 match = title_re.search(req.text)
                 if match:
                     template = template.replace('[$title]', str(match.group(1)))
+
+        if desc == '':
+            template = template.replace('[$desc]', '')
 
         self.content = template
         self.pid = post_id

@@ -41,6 +41,7 @@ id: 1
     assert_that(post_id).is_not_none()
 
 
+@pytest.mark.skip()
 @pytest.mark.parametrize("title, desc, content, tags", [
     ('my title', 'description', 'https://bnbits.ml', ['tag0', 'tag1'])
 ])
