@@ -16,7 +16,7 @@ from telegram.utils.helpers import escape_markdown
 from tinydb import TinyDB, Query
 
 from kanban.kanban import Kanban
-from paser.parser import Parser
+from parser.parser import Parser
 
 TOKEN: str = '1598446066:AAEkQ1ZuJkpJQQluUI2gUnyU1ERCu7IJab8'
 db: TinyDB = TinyDB('./storage/db-todo.json')

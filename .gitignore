@@ -1,2 +1,5 @@
 .idea/
 .bkp
+.pyc
+
+__pycache__/
