@@ -19,6 +19,7 @@ draft: true
 summary: [$desc] [$content]
 tags: [$tags]
 isfeed: true
+id: [$id]
 ---
         '''
         lc = locals()
@@ -32,6 +33,8 @@ isfeed: true
 
         total_posts = len([name for name in listdir(gohugo_path)])
         post_id = f'{total_posts + 1}'
+
+        template = template.replace('[$id]', post_id)
 
         self.content = template
         self.pid = post_id
