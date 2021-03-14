@@ -3,3 +3,4 @@ tinydb~=4.3.0
 requests~=2.25.0
 pytest~=6.1.2
 assertpy~=1.1
+GitPython
