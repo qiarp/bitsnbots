@@ -1,4 +1,5 @@
 from os import listdir
+from requests import get
 
 gohugo_path = '../bytesnbits/content/feed'
 
@@ -9,7 +10,7 @@ class Parser:
         self.pid = None
         return
 
-    def gohugo_parser(self, title, desc, content, tags) -> (str, str):
+    def gohugo_parser(self, title, desc, content, tags, post_id=None) -> (str, str):
 
         template = '''
 ---
@@ -24,7 +25,7 @@ id: [$id]
         '''
         lc = locals()
         for value in lc.keys():
-            if value == 'self' or value == 'tags':
+            if value in ['self', 'tags', 'post_id']:
                 continue
             data = lc.get(value)
             template = template.replace(f'[${value}]', data)
@@ -32,9 +33,11 @@ id: [$id]
         template = template.replace('[$tags]', str(tags))
 
         total_posts = len([name for name in listdir(gohugo_path)])
-        post_id = f'{total_posts + 1}'
+        post_id = f'{total_posts + 1}' if post_id is None else '1'
 
         template = template.replace('[$id]', post_id)
+
+        # if title is None, get title of url
 
         self.content = template
         self.pid = post_id
