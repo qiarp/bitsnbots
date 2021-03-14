@@ -324,7 +324,7 @@ def channel_handler(update: Update, context: CallbackContext) -> None:
     content = '\n'.join(url)
 
     parser = Parser()
-    parser.gohugo_parser(title, desc, content, tags)
+    parser.gohugo_parser(title, desc, content, tags, message.date.strftime("%Y-%m-%d"))
 
     Thread(target=parser.gohugo_save).start()
 

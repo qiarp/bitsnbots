@@ -3,21 +3,21 @@ from assertpy import assert_that
 from parser.parser import Parser
 
 
-@pytest.mark.parametrize("title, desc, content, tags", [
-    ('my title', 'description', 'https://bnbits.ml', ['tag0', 'tag1']),
-    ('second title', 'utf8 éçã', 'https://bnbits.ml', ['tag2']),
+@pytest.mark.parametrize("title, desc, content, tags, date", [
+    ('my title', 'description', 'https://bnbits.ml', ['tag0', 'tag1'], '2021-03-14'),
+    ('second title', 'utf8 éçã', 'https://bnbits.ml', ['tag2'], '2021-03-14'),
     ('Custom long title of post', 'this is the description of this post',
-     'https://bnbits.ml\nhttps://bnbits.ml', []),
+     'https://bnbits.ml\nhttps://bnbits.ml', [], '2021-03-14'),
     ('Custom long title of post - . look at this', 'this is the description of this post\nand it now has line break',
-     'https://bnbits.ml\nhttps://bnbits.ml\nhttps://duckduckgo.com', ['tag1', 'tag2', 'tag3', 'tag5']),
-    ('', 'bnb desc', 'https://bnbits.ml', ['tag21']),
-    ('', 'my desc', 'https://www.youtube.com/watch?v=zXTEWFb_6w4\nhttps://duckduckgo.com', ['tag31']),
+     'https://bnbits.ml\nhttps://bnbits.ml\nhttps://duckduckgo.com', ['tag1', 'tag2', 'tag3', 'tag5'], '2021-03-14'),
+    ('', 'bnb desc', 'https://bnbits.ml', ['tag21'], '2021-03-14'),
+    ('', 'my desc', 'https://www.youtube.com/watch?v=zXTEWFb_6w4\nhttps://duckduckgo.com', ['tag31'], '2021-03-14'),
 ])
-def test_gohugo_parser(title, desc, content, tags):
+def test_gohugo_parser(title, desc, content, tags, date):
     expected_template = '''
 ---
 title: '''+title+'''
-date: 2021-03-13T11:49:41-03:00
+date: '''+date+'''
 draft: true
 summary: '''+desc+''' '''+content+'''
 tags: '''+str(tags)+'''
@@ -31,6 +31,7 @@ id: 1
         desc,
         content,
         tags,
+        date,
         post_id=1
     )
 

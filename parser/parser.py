@@ -12,12 +12,12 @@ class Parser:
         self.pid = None
         return
 
-    def gohugo_parser(self, title: str, desc: str, content: str, tags: list, post_id=None) -> (str, str):
+    def gohugo_parser(self, title: str, desc: str, content: str, tags: list, date: str, post_id=None) -> (str, str):
 
         template = '''
 ---
 title: [$title]
-date: 2021-03-13T11:49:41-03:00
+date: [$date]
 draft: true
 summary: [$desc] [$content]
 tags: [$tags]
