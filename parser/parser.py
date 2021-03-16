@@ -1,6 +1,6 @@
 from os import listdir
 from requests import get
-from re import compile, UNICODE
+from re import compile, UNICODE, sub
 from github.git import Git
 
 gohugo_path = '../bytesnbits/content/feed'
@@ -32,7 +32,7 @@ id: [$id]
             data = lc.get(value)
             if data is None or len(data) <= 1:
                 continue
-            template = template.replace(f'[${value}]', data)
+            template = template.replace(f'[${value}]', self.cleanup_str(data))
 
         template = template.replace('[$tags]', str(tags))
 
@@ -48,7 +48,7 @@ id: [$id]
                 title_re = compile(r'<title>(.*?)</title>', UNICODE)
                 match = title_re.search(req.text)
                 if match:
-                    template = template.replace('[$title]', str(match.group(1)))
+                    template = template.replace('[$title]',  self.cleanup_str(str(match.group(1))))
 
         if desc == '':
             template = template.replace('[$desc]', '')
@@ -71,3 +71,7 @@ id: [$id]
             return None
 
         return filename
+
+    def cleanup_str(self, content: str):
+        n = sub('[:"\']', '', content)
+        return n
