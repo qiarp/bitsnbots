@@ -29,10 +29,13 @@ id: [$id]
         for value in lc.keys():
             if value in ['self', 'tags', 'post_id']:
                 continue
-            data = lc.get(value)
+            data = self.cleanup_str(lc.get(value)) \
+                if value in ['title'] \
+                else lc.get(value)
+
             if data is None or len(data) <= 1:
                 continue
-            template = template.replace(f'[${value}]', self.cleanup_str(data))
+            template = template.replace(f'[${value}]', data)
 
         template = template.replace('[$tags]', str(tags))
 
