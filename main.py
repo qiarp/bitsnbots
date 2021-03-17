@@ -8,6 +8,9 @@ import json
 import logging
 import traceback
 from threading import Thread
+from os import path
+import toml
+from sys import exit
 
 from telegram import Update, File, InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, CallbackQueryHandler
@@ -18,7 +21,11 @@ from tinydb import TinyDB, Query
 from kanban.kanban import Kanban
 from parser.parser import Parser
 
-TOKEN: str = '1598446066:AAEkQ1ZuJkpJQQluUI2gUnyU1ERCu7IJab8'
+
+config = toml.load('./config.toml')['bnb'] \
+    if path.exists('./config.toml') \
+    else exit('Please set ./config.toml')
+TOKEN: str = config['APIKEY']
 db: TinyDB = TinyDB('./storage/db-todo.json')
 file_db: TinyDB = TinyDB('./storage/db-file.json')
 kanban_db: TinyDB = TinyDB('./storage/db-kanban.json')

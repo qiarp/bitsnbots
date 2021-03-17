@@ -46,7 +46,8 @@ id: 1
             else assert_that(template).is_not_equal_to(expected_template)
     else:
         assert_that(template).is_not_equal_to(expected_template)
-        assert_that(len(template)).is_less_than(len(expected_template)) if title != '' else True
+        assert_that(len(template)).is_less_than(len(expected_template)) if title != '' \
+            else assert_that(len(template)).is_not_equal_to(len(expected_template))
 
     assert_that(post_id).is_not_none()
 

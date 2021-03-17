@@ -1,6 +1,7 @@
 .idea/
 .bkp
 .pyc
+config.toml
 
 __pycache__/
 .pytest_cache/
