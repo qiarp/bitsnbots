@@ -47,7 +47,6 @@ codepaste_headers = {'Authorization': 'Token c98f9e90-07df-413c-b7a1-8d6e7b6bb1d
 file_mimetypes = ['application/pdf', 'application/epub+zip']
 
 
-
 def command_handler(update: Update, context: CallbackContext) -> None:
     chat_id = update.message.chat_id
     message_id = update.message.message_id
@@ -295,6 +294,9 @@ def channel_handler(update: Update, context: CallbackContext) -> None:
 
     message = update.channel_post
     entities = message.entities
+
+    if len(message.text) <= 9:
+        return
 
     """
     [
