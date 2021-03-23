@@ -298,18 +298,6 @@ def channel_handler(update: Update, context: CallbackContext) -> None:
     if len(message.text) <= 9:
         return
 
-    """
-    [
-    {'type': 'hashtag', 'offset': 0, 'length': 12}, 
-    {'type': 'hashtag', 'offset': 13, 'length': 4}, 
-    {'type': 'hashtag', 'offset': 18, 'length': 5}, 
-    {'type': 'hashtag', 'offset': 24, 'length': 8}, 
-    {'type': 'hashtag', 'offset': 33, 'length': 4}, 
-    {'type': 'bold', 'offset': 39, 'length': 50}, 
-    {'type': 'italic', 'offset': 92, 'length': 65}, 
-    {'type': 'url', 'offset': 159, 'length': 45}
-    ]
-    """
     tags = []
     title = []
     desc = []
