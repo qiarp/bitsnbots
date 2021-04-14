@@ -1,4 +1,5 @@
-from tinydb import TinyDB, Query
+from tinydb import TinyDB, Query, where
+from tinydb.operations import delete
 from secrets import token_hex
 
 
@@ -45,3 +46,16 @@ class Kanban:
         user_board[status][token] = task
 
         return self.db.update(user_board, board.owner == owner_id), token
+
+    def remove_task(self, owner_id: str, from_status: str, token: str) -> bool:
+        board = Query()
+        user_board = self.db.search(board.owner == owner_id)[0]
+        
+        try:
+            board = user_board.copy()
+
+            # print(self.db.update(delete(token), where(user_board[from_status]) == owner_id))
+            return True
+        except Exception as e:
+            print(e)
+            return False

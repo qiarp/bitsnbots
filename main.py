@@ -181,6 +181,7 @@ def command_handler(update: Update, context: CallbackContext) -> None:
         )
 
     elif command == '/board':
+        # verificar se user.id possui board #todo
         keyboard = [
             [
                 InlineKeyboardButton('backlog', callback_data='backlog'),
@@ -207,6 +208,30 @@ def command_handler(update: Update, context: CallbackContext) -> None:
 
         update.message.reply_text(
             text=f'Nova tarefa {token} adicionada em {status}'
+        )
+    elif command == '/move':
+        task_token = message.split(' ')[0]
+        task = dict()
+
+        board = kanban.get_board(owner_id=user.id)
+
+        for status in board:
+            if status in ['board_id', 'owner']:
+                pass
+            else:
+                for token in board[status]:
+                    if task_token == token:
+                        task['token'] = token
+                        task['task'] = board[status][token]
+                        task['from'] = status
+                        break
+
+        ok = kanban.remove_task(owner_id=user.id, from_status=task['from'], token=task['token'])
+        response = f'Tarefa {task["token"]} removida do status atual' \
+            if ok else f'Erro remover tarefa do status atual'
+
+        update.message.reply_html(
+            text=response
         )
 
 
@@ -354,7 +379,7 @@ def main():
          'todo', 'task', 'show_tasks', 'tasks', 'del_task', 'done',
          'code',
          'help', 'ajuda',
-         'board', 'new_board', 'new_task'],
+         'board', 'new_board', 'new_task', 'move'],
         command_handler)
     )
 

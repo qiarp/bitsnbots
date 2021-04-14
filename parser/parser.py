@@ -40,7 +40,7 @@ id: [$id]
         template = template.replace('[$tags]', str(tags))
 
         total_posts = len([name for name in listdir(gohugo_path)])
-        post_id = f'{total_posts + 1}' if post_id is None else '1'
+        post_id = f'{total_posts + 2}' if post_id is None else '1'
 
         template = template.replace('[$id]', post_id)
 
