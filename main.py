@@ -21,6 +21,8 @@ from tinydb import TinyDB, Query
 from kanban.kanban import Kanban
 from parser.parser import Parser
 
+from internal.bot_data import bot_data
+
 
 config = toml.load('./config.toml')['bnb'] \
     if path.exists('./config.toml') \
@@ -118,18 +120,8 @@ def command_handler(update: Update, context: CallbackContext) -> None:
         )
 
     elif command in ['/help', '/ajuda']:
-        response = """<b>Lista de comandos disponiveis:</b>
-        - <code>[/todo, /task]</code> <em><strong>{minha tarefa}</strong></em>
-        <b>  -> Adiciona uma nova task</b>
-        - <code>[/show_tasks, /tasks]</code>
-        <b>  -> Lista todas as tasks</b>
-        - <code>/afk</code> <em><strong>{status}</strong></em>
-        <b>  -> Alerta de away from keyboard</b>
-        - <code>[/back, /online, /returned]</code>
-        <b>  -> Alerta de online</b>
-        - <code>[/del_task, /done]</code> <em><strong>{TaskToken}</strong></em>
-        <b>  -> Deleta a task requisitada</b>
-        """
+        commands = '\n'.join([f'/{cmd}' for cmd in bot_data.command_list])
+        response = f"<b>Lista de comandos disponiveis:</b>\n{commands}"
 
         update.message.reply_html(
             text=response
@@ -375,11 +367,7 @@ def main():
     dispatcher = updater.dispatcher
 
     dispatcher.add_handler(CommandHandler(
-        ['afk', 'back', 'online', 'returned',
-         'todo', 'task', 'show_tasks', 'tasks', 'del_task', 'done',
-         'code',
-         'help', 'ajuda',
-         'board', 'new_board', 'new_task', 'move'],
+        bot_data.command_list,
         command_handler)
     )
 
