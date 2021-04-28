@@ -51,7 +51,7 @@ id: [$id]
                 title_re = compile(r'<title>(.*?)</title>', UNICODE)
                 match = title_re.search(req.text)
                 if match:
-                    template = template.replace('[$title]',  self.cleanup_str(str(match.group(1))))
+                    template = template.replace('[$title]', self.cleanup_str(str(match.group(1))))
 
         if desc == '':
             template = template.replace('[$desc]', '')
